@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37314.3 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForeachLimitationDemo", "ForeachLimitationDemo\ForeachLimitationDemo.csproj", "{03866A66-A365-4960-B951-802857DADB46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03866A66-A365-4960-B951-802857DADB46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03866A66-A365-4960-B951-802857DADB46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03866A66-A365-4960-B951-802857DADB46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03866A66-A365-4960-B951-802857DADB46}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {019B0452-13A9-4FD8-A95D-62E15DA0991E}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,131 @@
+
+select p.FullName,d.Name,COUNT(e.EncounterId) as TotalEncounters,
+rank() over(order by count(e.EncounterId) desc) as rank
+
+from Provider p
+join
+Department d
+on p.DepartmentId=d.DepartmentId
+left join 
+Encounter e
+on p.ProviderId=e.ProviderId
+
+group by p.ProviderId,P.FullName,d.Name,d.DepartmentId
+
+
+
+
+
+ALTER TABLE Insurance
+ADD
+    ValidFrom DATETIME2
+        GENERATED ALWAYS AS ROW START HIDDEN
+        CONSTRAINT DF_Insurance_From
+        DEFAULT SYSUTCDATETIME(),
+
+    ValidTo DATETIME2
+        GENERATED ALWAYS AS ROW END HIDDEN
+        CONSTRAINT DF_Insurance_To
+        DEFAULT '9999-12-31 23:59:59.9999999',
+
+    PERIOD FOR SYSTEM_TIME (ValidFrom, ValidTo);
+
+
+	ALTER TABLE Insurance
+SET (
+    SYSTEM_VERSIONING = ON
+    (
+        HISTORY_TABLE = dbo.Insurance_History
+    )
+);
+
+
+select * from Insurance where InsuranceId=1;
+
+update Insurance set Payer='Bupa' where InsuranceId=1;
+
+select * from Insurance
+FOR SYSTEM_TIME ALL
+where InsuranceId=1
+
+
+--Assignment 3
+
+create view vw_billing
+as
+select ClaimId,BilledAmount ,[ReimbursedAmt],[Status] from [dbo].[Claim]
+
+SELECT *
+FROM Claim
+ORDER BY ClaimId
+OFFSET 0 ROWS FETCH NEXT 20 ROWS ONLY;
+
+create procedure sp_RevenueLeakageReport
+as
+Begin
+select Status , Count(*) as TotalClaims, Sum(BilledAmount) as TotalBilledAmt , 
+Sum(ISNULL(ReimbursedAmt,0)) as TotalReimbursedAmt,
+Sum(BilledAmount -ISNULL(ReimbursedAmt,0))as outstandingAmt , Rank() over(order by 
+ Sum(BilledAmount -ISNULL(ReimbursedAmt,0)) desc) as lossRank
+ from vw_billing
+ group by Status
+ order by lossRank
+ End;
+
+ EXEC sp_RevenueLeakageReport;
+
+ --Assignment 4
+ select top 20 * from patient;
+
+select count(*) as total from Encounter where DischargeDate is null;
+
+create or alter procedure sp_ExecutiveDashboard
+as
+begin
+set nocount on;
+select Count(*) as TotalActivePatients from Patient where IsActive=1;
+select top 5 DepartmentId , count(*) as TotalEncounters from Encounter group by DepartmentId order by 
+TotalEncounters desc;
+select Avg(DATEDIFF(day,AdmitDate,DischargeDate)) as AverageLengthOfStay from Encounter;
+
+with tab1 as (
+select patientId ,AdmitDate, Lag(DischargeDate) over
+(partition by patientId order by AdmitDate) as PreviousDischargeDate from Encounter where DateDiff(day,AdmitDate,GetDate())<=30
+)
+
+select count(*) as TotalReadmissionsLast30Days from tab1 where
+PreviousDischargeDate   is not null and DATEDIFF(day ,PreviousDischargeDate,AdmitDate)<=15
+
+end;
+
+exec sp_ExecutiveDashboard
+
+
+
+
+--assignment 5
+
+select top 30 * from encounter
+
+create or alter procedure usp_ProviderWorkload
+as
+begin 
+set nocount on;
+select 
+p.ProviderId,p.FullName,count(*) as  workload , rank() over(order by count(*) desc) as rank
+
+from Encounter  e 
+join
+Provider p
+on e.ProviderId=p.ProviderId
+
+group by p.ProviderId,p.FullName
+order by workload desc
+
+end;
+
+exec usp_ProviderWorkload
+
+
+
+
